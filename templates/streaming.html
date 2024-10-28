@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Streaming</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Cobra, sans-serif;
+            background-color: #001f3f;
+            color: #FFD700;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        video {
+            width: 100%;
+            max-height: 400px;
+            background-color: black;
+            border: 2px solid #FFD700; 
+            margin-bottom: 20px;
+        }
+
+        .resolution-buttons {
+            margin-top: 15px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .resolution-button {
+            padding: 10px 20px;
+            border: none;
+            background-color: #FFD700;
+            color: #001f3f;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .resolution-button.active {
+            background-color: #001f3f;
+            color: #FFD700;
+            border: 2px solid #FFD700;
+        }
+
+        .recommendations {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .recommendation-item {
+            display: inline-block;
+            margin: 10px;
+            padding: 5px;
+            background-color: #FFD700;
+            color: #001f3f;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .recommendation-item:hover {
+            background-color: #ffeb3b;
+        }
+    </style>
+</head>
+<body>
+    <h1>Video Player</h1>
+    <video id="videoPlayer" controls>
+        <source id="videoSource" src="Shahid4U.Com.Gangs.Of.London.S01E01.720p.WEB-DL.mp4" type="video/mp4">
+        Your browser does not support HTML5 video.
+    </video>
+
+    <div class="resolution-buttons">
+        <button class="resolution-button active" data-src="video_720p.mp4">720p</button>
+        <button class="resolution-button" data-src="video_480p.mp4">480p</button>
+        <button class="resolution-button" data-src="video_360p.mp4">360p</button>
+    </div>
+
+    <div class="recommendations">
+        <h2>Recommandations</h2>
+        <div id="recommendationList"></div>
+    </div>
+
+    <script>
+        const videoPlayer = document.getElementById('videoPlayer');
+        const videoSource = document.getElementById('videoSource');
+        const resolutionButtons = document.querySelectorAll('.resolution-button');
+        const recommendationList = document.getElementById('recommendationList');
+
+        const videos = ['video_720p.mp4', 'video_480p.mp4', 'video_360p.mp4'];
+
+        videos.forEach(video => {
+            const item = document.createElement('div');
+            item.classList.add('recommendation-item');
+            item.textContent = video;
+            item.addEventListener('click', () => {
+                videoSource.src = video;
+                videoPlayer.load();
+                resolutionButtons.forEach(button => {
+                    button.classList.remove('active');
+                    if (button.getAttribute('data-src') === video) {
+                        button.classList.add('active');
+                    }
+                });
+            });
+            recommendationList.appendChild(item);
+        });
+
+        resolutionButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                resolutionButtons.forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+                const selectedResolution = this.getAttribute('data-src');
+                videoSource.src = selectedResolution;
+                videoPlayer.load();
+            });
+        });
+    </script>
+</body>
+</html>
