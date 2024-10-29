@@ -1,16 +1,13 @@
-from flask import Flask, request, jsonify, render_template
 import os
 import uuid
-from fonctions import segment_video
+from flask import Flask, request, jsonify, render_template
+from fonctions import segment_video, create_resolutions, VideoProcessingError
 
 app = Flask(__name__)
 
-UPLOAD_FOLDER = 'uploads'
-SEGMENTS_FOLDER = 'segments'
+UPLOAD_FOLDER = 'Uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-os.makedirs(SEGMENTS_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-app.config['SEGMENTS_FOLDER'] = SEGMENTS_FOLDER
 
 @app.route('/')
 def home():
@@ -25,15 +22,33 @@ def upload_video():
     if file.filename == '':
         return jsonify({'error': 'Nom de fichier vide'}), 400
 
-    # Sauvegarde temporaire de la vidéo
+    # Générer un identifiant unique et chemin temporaire pour la vidéo
     video_id = str(uuid.uuid4())
-    video_path = os.path.join(app.config['UPLOAD_FOLDER'], video_id + "_" + file.filename)
+    video_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
+    
+    # Enregistrer temporairement la vidéo
     file.save(video_path)
 
-    # Appelle la fonction de segmentation
-    segments = segment_video(video_path, video_id, app.config['SEGMENTS_FOLDER'])
+    try:
+        # Créer les résolutions inférieures de la vidéo
+        resolutions_videos = create_resolutions(video_path, video_id)
 
-    return jsonify({'message': 'Vidéo téléchargée et segmentée avec succès', 'segments': segments}), 200
+        # Segmentation de la vidéo principale
+        segments_main = segment_video(video_path, video_path, video_id)
 
+        # Segmentation des versions à résolution inférieure
+        all_segments = {'original': segments_main}
+        for resolution, res_video_path in resolutions_videos.items():
+            all_segments[resolution] = segment_video(res_video_path, video_path, video_id)
+            os.remove(res_video_path)  # Supprimer chaque vidéo redimensionnée après segmentation
+
+        # Supprimer la vidéo originale après segmentation
+        os.remove(video_path)
+    except VideoProcessingError as e:
+        # Supprimer les fichiers temporaires en cas d'erreur
+        os.remove(video_path)
+        return jsonify({'error': str(e)}), 500
+
+    return jsonify({'message': 'Vidéo téléchargée et segmentée avec succès', 'segments': all_segments}), 200
 if __name__ == '__main__':
     app.run(debug=True)
