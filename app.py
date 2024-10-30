@@ -50,5 +50,12 @@ def upload_video():
         return jsonify({'error': str(e)}), 500
 
     return jsonify({'message': 'Vidéo téléchargée et segmentée avec succès', 'segments': all_segments}), 200
+
+
+@app.route('/upload_page')
+def upload_page():
+    return render_template('upload.html')
+
+
 if __name__ == '__main__':
     app.run(debug=True)

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Uploader une Vidéo</title>
+</head>
+<body>
+    <h1>Uploader une Vidéo</h1>
+    <form id="uploadForm">
+        <label for="videoFile">Choisir une vidéo :</label>
+        <input type="file" id="videoFile" name="file" accept="video/*" required>
+        <button type="submit">Uploader</button>
+    </form>
+
+    <div id="result"></div>
+
+    <script>
+        document.getElementById("uploadForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            const fileInput = document.getElementById("videoFile");
+            const file = fileInput.files[0];
+
+            if (!file) {
+                alert("Veuillez sélectionner une vidéo.");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append("file", file);
+
+            fetch("/upload", {
+                method: "POST",
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    document.getElementById("result").innerHTML = `<p style="color:red;">Erreur : ${data.error}</p>`;
+                } else {
+                    document.getElementById("result").innerHTML = `<p style="color:green;">${data.message}</p>`;
+                    console.log("Segments créés :", data.segments);
+                }
+            })
+            .catch(error => {
+                console.error("Erreur lors de l'upload :", error);
+                document.getElementById("result").innerHTML = `<p style="color:red;">Erreur lors de l'upload.</p>`;
+            });
+        });
+    </script>
+</body>
+</html>
