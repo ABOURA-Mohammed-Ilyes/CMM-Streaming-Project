@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vidéothèque</title>
+    <link rel="stylesheet" href="/static/css/home.css">
+</head>
+<body>
+    <h1>Vidéothèque</h1>
+    <button onclick="location.href='/upload'">Uploader une vidéo</button>
+    
+    <div id="videos-list"></div> <!-- Conteneur pour la liste des vidéos -->
+
+    <script src="{{ url_for('static', filename='js/home.js') }}"></script>
+</body>
+</html>

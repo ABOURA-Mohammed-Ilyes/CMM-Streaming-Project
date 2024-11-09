@@ -1,0 +1,70 @@
+/* #videoPlayer {
+    width: 640px;
+    height: 360px;
+    display: block;
+    margin: 0;
+    object-fit: contain;
+} */
+
+/* Styles pour la liste des segments */
+#segmentList {
+    list-style-type: none;
+    padding: 0;
+}
+
+#segmentList .segment-item {
+    margin: 5px 0;
+}
+
+/* Styles pour les liens des segments */
+#segmentList .segment-item a {
+    text-decoration: none;
+    color: #007bff; /* Couleur par défaut des liens */
+}
+
+/* Styles pour le segment en cours de lecture */
+#segmentList .segment-item.playing a {
+    color: #fff;
+    background-color: #007bff;
+    padding: 5px;
+    border-radius: 3px;
+}
+
+/* button {
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 15px;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+#resolutionButtons {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+    margin-left: 0; 
+    align-items: flex-start; 
+}
+
+#resolutionButtons button {
+    padding: 8px 15px;
+    font-size: 14px;
+    font-weight: bold;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#resolutionButtons button:hover {
+    background-color: #0056b3;
+} */

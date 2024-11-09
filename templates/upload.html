@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Vidéos</title>
+</head>
+<body>
+    <h1>Uploader des vidéos</h1>
+    <input type="file" id="videoInput" multiple accept="video/*" />
+    <div id="uploadStatus"></div> <!-- Conteneur pour afficher le suivi des statuts d'upload -->
+
+    <script src="{{ url_for('static', filename='js/upload.js') }}"></script>
+</body>
+</html>

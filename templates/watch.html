@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lecteur Vidéo</title>
+    <link rel="stylesheet" href="/static/css/watch.css">
+</head>
+<body>
+    <button onclick="location.href='/'">Home</button> <!-- Button to go back to the home page -->
+
+    <div id="resolutionButtons"></div> <!-- Container for resolution buttons -->
+
+    <video id="videoPlayer" controls></video>
+    <ul id="segmentList"></ul>
+
+    <script src="{{ url_for('static', filename='js/watch.js') }}"></script>
+</body>
+</html>
