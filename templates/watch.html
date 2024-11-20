@@ -7,12 +7,14 @@
     <link rel="stylesheet" href="/static/css/watch.css">
 </head>
 <body>
-    <button onclick="location.href='/'">Home</button> <!-- Button to go back to the home page -->
+    <button onclick="location.href='/'" id="homeButton">Home</button> <!-- Button to go back to the home page -->
 
     <div id="resolutionButtons"></div> <!-- Container for resolution buttons -->
 
-    <video id="videoPlayer" controls></video>
-    <ul id="segmentList"></ul>
+    <div id="video-container">
+        <video id="videoPlayer" controls></video>
+        <ul id="segmentList"></ul> <!-- Playlist on the right -->
+    </div>
 
     <script src="{{ url_for('static', filename='js/watch.js') }}"></script>
 </body>

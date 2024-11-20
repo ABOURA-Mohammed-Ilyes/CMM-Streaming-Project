@@ -1,70 +1,84 @@
-/* #videoPlayer {
-    width: 640px;
-    height: 360px;
-    display: block;
-    margin: 0;
-    object-fit: contain;
-} */
+/* Conteneur principal pour la vidéo et la playlist */
+#video-container {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px; /* Espacement entre la vidéo et la playlist */
+    margin-top: 20px;
+}
 
-/* Styles pour la liste des segments */
+/* Style pour la vidéo */
+#videoPlayer {
+    flex: 2; 
+    max-width: 600px; 
+    max-height: 340px; 
+    width: 100%; 
+    height: auto;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Style pour la playlist */
 #segmentList {
+    flex: 1; /* Prend moins de place */
+    max-width: 300px; /* Limite la largeur */
     list-style-type: none;
     padding: 0;
+    margin: 0;
+    overflow-y: auto; /* Ajoute une barre de défilement si nécessaire */
+    max-height: 400px; /* Limite la hauteur */
+    border: 1px solid #ddd; /* Bordure autour de la playlist */
+    border-radius: 5px;
+    background-color: #f9f9f9; /* Fond léger */
 }
 
+/* Style des éléments de la liste */
 #segmentList .segment-item {
-    margin: 5px 0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 8px;
+    margin: 5px 10px; /* Espacement interne des items */
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #fff;
+    transition: background-color 0.3s, transform 0.3s;
+    cursor: pointer;
 }
 
-/* Styles pour les liens des segments */
+#segmentList .segment-item:hover {
+    background-color: #e6f0ff; /* Couleur de survol */
+    transform: scale(1.02); /* Légère mise en avant */
+}
+
+/* Miniatures compactes */
+#segmentList .segment-item img {
+    width: 60px; /* Miniature plus petite */
+    height: 45px; /* Proportions conservées */
+    margin-right: 10px; /* Espacement avec le texte */
+    border-radius: 3px; /* Coins légèrement arrondis */
+    border: 1px solid #ccc;
+    object-fit: cover; /* Ajuste les dimensions sans déformation */
+}
+
+/* Liens de la playlist */
 #segmentList .segment-item a {
     text-decoration: none;
-    color: #007bff; /* Couleur par défaut des liens */
+    font-size: 13px; /* Texte plus compact */
+    color: #007bff;
+    font-weight: bold;
 }
 
-/* Styles pour le segment en cours de lecture */
+#segmentList .segment-item.playing {
+    background-color: #007bff;
+    color: white;
+}
+
 #segmentList .segment-item.playing a {
-    color: #fff;
-    background-color: #007bff;
-    padding: 5px;
-    border-radius: 3px;
-}
-
-/* button {
-    padding: 10px 20px;
-    font-size: 16px;
-    font-weight: bold;
-    background-color: #4CAF50;
     color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-bottom: 15px;
 }
 
-button:hover {
-    background-color: #45a049;
+#segmentList .segment-item.playing img {
+    border-color: white;
 }
 
-#resolutionButtons {
-    display: flex;
-    gap: 10px;
-    margin-top: 10px;
-    margin-left: 0; 
-    align-items: flex-start; 
-}
-
-#resolutionButtons button {
-    padding: 8px 15px;
-    font-size: 14px;
-    font-weight: bold;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-#resolutionButtons button:hover {
-    background-color: #0056b3;
-} */

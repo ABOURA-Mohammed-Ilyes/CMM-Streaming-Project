@@ -15,14 +15,15 @@ class VideoLibrary {
     }
 
     populateVideoLibrary(videos) {
-        this.videoContainer.innerHTML = ""; // Clear the list before populating
+        this.videoContainer.innerHTML = ""; // Vider la liste avant de la remplir
 
         videos.forEach(video => {
             const videoElement = document.createElement("div");
             videoElement.classList.add("video-container");
 
-            // Créer le lien pour "auto" avec la résolution d'origine
-            const resolutionLinks = video.available_resolutions.map(res => 
+            // Utiliser le champ 'segments.folder' du JSON pour obtenir les résolutions disponibles
+            const resolutions = video.segments.folder.split(',').map(res => res.trim());
+            const resolutionLinks = resolutions.map(res => 
                 `<a href="/watch?v=${video.NomDossier}&res=${res}&seg=0">${res}p</a>`
             ).join(" | ");
 

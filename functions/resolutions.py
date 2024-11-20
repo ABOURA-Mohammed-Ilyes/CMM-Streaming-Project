@@ -16,16 +16,30 @@ def create_resolutions(upload_folder, folder_name, target_resolution):
     os.makedirs(output_resolution_folder, exist_ok=True)
 
     # Créer la vidéo redimensionnée
+    # Extraire la hauteur cible en s'assurant que target_resolution est un nombre
+    target_height = int(''.join(filter(str.isdigit, target_resolution)))
     resized_video_path = os.path.join(output_resolution_folder, f"{folder_name}_{target_resolution}.mp4")
-    ffmpeg.input(video_path).output(resized_video_path, vf=f"scale=-2:{target_resolution.split('p')[0]}").run()
+    ffmpeg.input(video_path).output(resized_video_path, vf=f"scale=-2:{target_height}").run()
 
     # Segmenter la vidéo redimensionnée
     segment_video(output_resolution_folder, resized_video_path, json_path, update_json=False)
 
+    # Mettre à jour le JSON pour ajouter la nouvelle résolution dans segments.folder
+    existing_folder = video_info.get('segments', {}).get('folder', '')
+    # Séparer les résolutions existantes
+    existing_resolutions = [res.strip() for res in existing_folder.split(',') if res.strip()]
+    # Ajouter la nouvelle résolution si elle n'est pas déjà présente
+    if target_resolution not in existing_resolutions:
+        existing_resolutions.append(target_resolution)
+        # Recréer la chaîne avec les résolutions séparées par des virgules
+        video_info['segments']['folder'] = ', '.join(existing_resolutions)
+        # Sauvegarder les informations mises à jour dans le JSON
+        with open(json_path, 'w') as json_file:
+            json.dump(video_info, json_file, indent=4)
+
     # Supprimer la vidéo redimensionnée une fois la segmentation terminée
     os.remove(resized_video_path)
     return True
-
 
 def delete_original_video(upload_folder, folder_name):
     """

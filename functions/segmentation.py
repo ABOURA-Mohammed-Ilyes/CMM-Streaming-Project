@@ -123,13 +123,17 @@ def save_video_and_info(file, upload_folder, time_intervals=None):
 
     return folder_name  # Retourne le nom du dossier
 
+import os
+import json
+import ffmpeg
+
 def segment_video_original(folder_path, json_path):
     # Charger les informations depuis le fichier JSON
     with open(json_path, 'r') as json_file:
         video_info = json.load(json_file)
 
     video_path = video_info["Chemin"]
-    duration = video_info["duration"]
+    duration = float(video_info["duration"])
     height = int(video_info["height"])
     segment_folder_name = f"{height}"  # Dossier pour les segments (e.g., "720")
     segment_folder_path = os.path.join(folder_path, segment_folder_name)
@@ -144,14 +148,22 @@ def segment_video_original(folder_path, json_path):
         segment_filename = f"segment_{i:04d}.mp4"
         segment_path = os.path.join(segment_folder_path, segment_filename)
 
+        # Créer le segment vidéo
         ffmpeg.input(video_path, ss=start_time, t=segment_duration).output(segment_path).run()
 
-    # Mettre à jour le JSON avec les informations des segments
+        # Créer une image de la première frame du segment
+        image_filename = f"segment_{i:04d}.jpg"
+        image_path = os.path.join(segment_folder_path, image_filename)
+
+        ffmpeg.input(video_path, ss=start_time).output(image_path, vframes=1).run()
+
+    # Mettre à jour le JSON avec les informations des segments et des images
     video_info["segments"] = {
         "folder": segment_folder_name,
         "count": num_segments,
         "segment_duration": segment_duration,
         "segments": [f"segment_{i:04d}.mp4" for i in range(num_segments)]
+
     }
 
     # Sauvegarder les informations mises à jour dans le JSON
@@ -160,12 +172,13 @@ def segment_video_original(folder_path, json_path):
 
     return video_info["segments"], segment_folder_name
 
+
 def segment_video(folder_path, video_path, json_path, update_json=True):
     with open(json_path, 'r') as json_file:
         video_info = json.load(json_file)
 
     # Déterminer les paramètres de segmentation
-    duration = video_info["duration"]
+    duration = float(video_info["duration"])
     segment_duration = 10  # En secondes
     num_segments = int(duration // segment_duration) + (1 if duration % segment_duration > 0 else 0)
     resolution_folder = os.path.basename(folder_path)  # Utiliser le nom du dossier pour identifier la résolution
@@ -179,7 +192,14 @@ def segment_video(folder_path, video_path, json_path, update_json=True):
         segment_filename = f"segment_{i:04d}.mp4"
         segment_path = os.path.join(folder_path, segment_filename)
 
+        # Créer le segment vidéo
         ffmpeg.input(video_path, ss=start_time, t=segment_duration).output(segment_path).run()
+
+        # Créer une image de la première frame du segment
+        image_filename = f"segment_{i:04d}.jpg"
+        image_path = os.path.join(folder_path, image_filename)
+
+        ffmpeg.input(video_path, ss=start_time).output(image_path, vframes=1).run()
 
     # Mettre à jour le fichier JSON avec les informations des segments si nécessaire
     if update_json:
@@ -188,6 +208,7 @@ def segment_video(folder_path, video_path, json_path, update_json=True):
             "count": num_segments,
             "segment_duration": segment_duration,
             "segments": [f"segment_{i:04d}.mp4" for i in range(num_segments)]
+
         }
         video_info["available_resolutions"] = video_info.get("available_resolutions", []) + [resolution_folder]
 
