@@ -2,7 +2,7 @@ import os
 from flask import Flask, render_template, jsonify, request
 from functions.segmentation import save_video_and_info, segment_video_original
 from functions.displayVideos import get_all_video_metadata
-from functions.getSegments import get_video_segments, get_segment
+from functions.getSegments import get_segment
 from functions.resolutions import create_resolutions, delete_original_video
 
 app = Flask(__name__)
