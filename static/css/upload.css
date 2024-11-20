@@ -1,0 +1,5 @@
+.video-preview {
+    width: 100%;           /* Le lecteur vidéo prendra 100% de la largeur de son conteneur */
+    max-width: 600px;      /* Définissez la largeur maximale souhaitée */
+    height: auto;          /* La hauteur s'ajustera automatiquement pour conserver le ratio */
+}

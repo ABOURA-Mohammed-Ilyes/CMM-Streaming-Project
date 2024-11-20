@@ -2,8 +2,9 @@ import os
 import uuid
 import json
 import ffmpeg
-from flask import current_app
+from flask import current_app, jsonify
 from werkzeug.utils import secure_filename
+
 
 def get_video_info(video_path):
     """
@@ -22,24 +23,96 @@ def get_video_info(video_path):
         print(f"Erreur lors de l'obtention des informations de la vidéo : {e}")
         return {"duration": "Inconnue", "height": "Inconnue"}
 
-def save_video_and_info(file):
-    # Code existant pour générer le GUID et créer le dossier unique
+def process_video_intervals(input_video_path, output_video_path, time_intervals):
+    try:
+        segment_paths = []
+        segment_dir = os.path.dirname(output_video_path)
+
+        # Ensure that paths use forward slashes
+        input_video_path = os.path.abspath(input_video_path).replace('\\', '/')
+        output_video_path = os.path.abspath(output_video_path).replace('\\', '/')
+        segment_dir = os.path.abspath(segment_dir).replace('\\', '/')
+
+        for i, interval in enumerate(time_intervals):
+            start_time = interval['start']
+            end_time = interval['end']
+            duration = end_time - start_time
+            segment_filename = f"segment_{i}.mp4"
+            segment_path = os.path.join(segment_dir, segment_filename).replace('\\', '/')
+
+            # Extract the segment
+            (
+                ffmpeg
+                .input(input_video_path, ss=start_time, t=duration)
+                .output(segment_path, c='copy')
+                .overwrite_output()
+                .run()
+            )
+
+            segment_paths.append(segment_path)
+
+        # Create the segments.txt file with absolute paths and forward slashes
+        list_file_path = os.path.join(segment_dir, 'segments.txt').replace('\\', '/')
+        with open(list_file_path, 'w') as f:
+            for segment_path in segment_paths:
+                # Paths are already absolute and use forward slashes
+                f.write(f"file '{segment_path}'\n")
+
+        # Print the content of segments.txt for debugging
+        print("Contenu de segments.txt :")
+        with open(list_file_path, 'r') as f_debug:
+            print(f_debug.read())
+
+        # Concatenate the segments using ffmpeg-python
+        (
+            ffmpeg
+            .input(list_file_path, format='concat', safe=0)
+            .output(output_video_path, c='copy')
+            .overwrite_output()
+            .run()
+        )
+
+        # Clean up temporary files
+        for segment_path in segment_paths:
+            os.remove(segment_path)
+        os.remove(list_file_path)
+
+        return True
+    except Exception as e:
+        print(f"Erreur lors du traitement des intervalles de temps : {e}")
+        raise  # Re-raise the exception to be caught in the calling function
+
+def save_video_and_info(file, upload_folder, time_intervals=None):
+    # Code to generate GUID and create unique folder
     video_name = secure_filename(file.filename)
     guid = uuid.uuid4()
     folder_name = f"{os.path.splitext(video_name)[0]}_{guid}"
-    folder_path = os.path.join(current_app.config['UPLOAD_FOLDER'], folder_name)
+    folder_path = os.path.join(upload_folder, folder_name)
     os.makedirs(folder_path, exist_ok=True)
 
-    # Enregistrer la vidéo avec le même nom que le dossier
-    video_path = os.path.join(folder_path, f"{folder_name}.mp4")
-    file.save(video_path)
+    # Enregistrer la vidéo originale temporairement
+    temp_video_path = os.path.join(folder_path, f"original_{folder_name}.mp4")
+    file.save(temp_video_path)
 
-    # Récupérer les informations de la vidéo
-    video_info = get_video_info(video_path)
+    # Traiter les intervalles de temps si fournis
+    if time_intervals:
+        final_video_path = os.path.join(folder_path, f"{folder_name}.mp4")
+        success = process_video_intervals(temp_video_path, final_video_path, time_intervals)
+        if not success:
+            return jsonify({"error": "Erreur lors du traitement des intervalles de temps"}), 500
+        # Supprimer la vidéo originale temporaire si le traitement a réussi
+        os.remove(temp_video_path)
+    else:
+        # Renommer la vidéo originale comme vidéo finale
+        final_video_path = os.path.join(folder_path, f"{folder_name}.mp4")
+        os.rename(temp_video_path, final_video_path)
+
+    # Récupérer les informations de la vidéo finale
+    video_info = get_video_info(final_video_path)
     video_info.update({
         "NomVideo": video_name,
         "NomDossier": folder_name,
-        "Chemin": video_path
+        "Chemin": final_video_path
     })
 
     # Enregistrer les informations dans un fichier JSON

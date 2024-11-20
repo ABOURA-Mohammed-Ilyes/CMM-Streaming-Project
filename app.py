@@ -4,6 +4,7 @@ from functions.segmentation import save_video_and_info, segment_video_original
 from functions.displayVideos import get_all_video_metadata
 from functions.getSegments import get_segment
 from functions.resolutions import create_resolutions, delete_original_video
+import json 
 
 app = Flask(__name__)
 
@@ -34,12 +35,23 @@ def watch():
 def upload_video():
     if 'video' not in request.files:
         return jsonify({"error": "Aucun fichier trouvé"}), 400
-    
+
     file = request.files['video']
     if file.filename == '':
         return jsonify({"error": "Nom de fichier vide"}), 400
-    
-    folder_name = save_video_and_info(file)
+
+    # Récupérer les intervalles de temps depuis le formulaire
+    time_intervals = request.form.get('time_intervals')
+    if time_intervals:
+        try:
+            time_intervals = json.loads(time_intervals)
+        except json.JSONDecodeError:
+            return jsonify({"error": "Format des intervalles de temps invalide"}), 400
+    else:
+        time_intervals = None
+
+    # Enregistrer la vidéo et les informations
+    folder_name = save_video_and_info(file, app.config['UPLOAD_FOLDER'], time_intervals)
     return jsonify({"success": f"Vidéo sauvegardée dans le dossier {folder_name}", "folder_name": folder_name}), 200
 
 @app.route('/api/segment/<folder_name>', methods=['POST'])

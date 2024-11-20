@@ -2,7 +2,7 @@ class VideoPlayer {
     constructor() {
         this.videoPlayer = document.getElementById("videoPlayer");
         this.segmentList = document.getElementById("segmentList");
-        this.resolutionButtons = document.getElementById("resolutionButtons"); // Add container for resolution buttons
+        this.resolutionButtons = document.getElementById("resolutionButtons");
         this.currentSegmentIndex = 0;
         this.segments = [];
         this.currentResolution = null;
