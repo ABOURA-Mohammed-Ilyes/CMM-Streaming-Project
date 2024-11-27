@@ -3,17 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Upload Vidéos</title>
+    <title>Uploader des Vidéos</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
     <link rel="stylesheet" href="/static/css/upload.css">
-
 </head>
 <body>
-    <button onclick="window.location.href='/'">Home</button>
+    <!-- Navigation Bar -->
+    <nav class="container-fluid">
+        <ul>
+            <li><strong>Vidéothèque</strong></li>
+        </ul>
+        <ul>
+            <li><a href="/">Accueil</a></li>
+            <li><a href="/categories">Catégories</a></li>
+            <li><a href="/about" role="button">À Propos</a></li>
+        </ul>
+    </nav>
 
-    <h1>Uploader des vidéos</h1>
-    <input type="file" id="videoInput" multiple accept="video/*" />
-    <div id="uploadStatus"></div> <!-- Conteneur pour afficher le suivi des statuts d'upload -->
+    <!-- Main Content -->
+    <main class="container">
+        <header>
+            <h1>Uploader des Vidéos</h1>
+            <p>Sélectionnez des fichiers vidéo à téléverser.</p>
+        </header>
 
+        <!-- Video Upload Section -->
+        <section>
+            <label for="videoInput" class="file-label">Choisissez vos vidéos</label>
+            <input type="file" id="videoInput" multiple accept="video/*" class="file-input">
+            <button onclick="window.location.href='/'" role="button">Retour à l'Accueil</button>
+        </section>
+
+        <!-- Upload Status -->
+        <section>
+            <h2>Statut d'Upload</h2>
+            <div id="uploadStatus" class="upload-status">
+                <!-- Les statuts d'upload apparaîtront ici -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="container">
+        <small><a href="/contact">Contactez-nous</a> • <a href="/privacy">Politique de confidentialité</a></small>
+    </footer>
+
+    <!-- JavaScript -->
     <script src="{{ url_for('static', filename='js/upload.js') }}"></script>
 </body>
 </html>

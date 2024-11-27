@@ -4,14 +4,45 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vidéothèque</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
     <link rel="stylesheet" href="/static/css/home.css">
 </head>
 <body>
-    <h1>Vidéothèque</h1>
-    <button onclick="location.href='/upload'">Uploader une vidéo</button>
-    
-    <div id="videos-list"></div> <!-- Conteneur pour la liste des vidéos -->
+    <!-- Navigation Bar -->
+    <nav class="container-fluid">
+        <ul>
+            <li><strong>Vidéothèque</strong></li>
+        </ul>
+        <ul>
+            <li><a href="#">Accueil</a></li>
+            <li><a href="/categories">Catégories</a></li>
+            <li><a href="/about" role="button">À Propos</a></li>
+        </ul>
+    </nav>
 
+    <!-- Main Content -->
+    <main class="container">
+        <header>
+            <h1>Bienvenue à la Vidéothèque</h1>
+            <p>Explorez et téléchargez vos vidéos préférées</p>
+            <button onclick="location.href='/upload'" role="button" class="contrast">Uploader une vidéo</button>
+        </header>
+
+        <!-- Video List Section -->
+        <section id="videos-section">
+            <h2>Vos Vidéos</h2>
+            <div id="videos-list" class="grid">
+                <!-- Les vidéos téléchargées apparaîtront ici -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="container">
+        <small><a href="/contact">Contactez-nous</a> • <a href="/privacy">Politique de confidentialité</a></small>
+    </footer>
+
+    <!-- JavaScript -->
     <script src="{{ url_for('static', filename='js/home.js') }}"></script>
 </body>
 </html>

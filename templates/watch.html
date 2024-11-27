@@ -4,18 +4,57 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lecteur Vidéo</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
     <link rel="stylesheet" href="/static/css/watch.css">
 </head>
 <body>
-    <button onclick="location.href='/'" id="homeButton">Home</button> <!-- Button to go back to the home page -->
+    <!-- Navigation Bar -->
+    <nav class="container-fluid">
+        <ul>
+            <li><strong>Vidéothèque</strong></li>
+        </ul>
+        <ul>
+            <li><a href="/">Accueil</a></li>
+            <li><a href="/upload">Uploader</a></li>
+            <li><a href="/categories">Catégories</a></li>
+        </ul>
+    </nav>
 
-    <div id="resolutionButtons"></div> <!-- Container for resolution buttons -->
+    <!-- Main Content -->
+    <main class="container">
+        <header>
+            <h1>Lecteur Vidéo</h1>
+            <p>Regardez vos vidéos en haute qualité avec des options personnalisées.</p>
+        </header>
 
-    <div id="video-container">
-        <video id="videoPlayer" controls></video>
-        <ul id="segmentList"></ul> <!-- Playlist on the right -->
-    </div>
+        <!-- Resolution Buttons -->
+        <section id="resolutionSection">
+            <h2>Choisissez une résolution</h2>
+            <div id="resolutionButtons" class="grid">
+                <!-- Boutons de résolution apparaîtront ici -->
+            </div>
+        </section>
 
+        <!-- Video Player and Playlist -->
+        <section id="videoSection" class="grid">
+            <div id="video-container" class="video-player">
+                <video id="videoPlayer" controls></video>
+            </div>
+            <aside id="playlist">
+                <h2>Playlist</h2>
+                <ul id="segmentList" class="segment-list">
+                    <!-- Liste des segments vidéo -->
+                </ul>
+            </aside>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="container">
+        <small><a href="/contact">Contactez-nous</a> • <a href="/privacy">Politique de confidentialité</a></small>
+    </footer>
+
+    <!-- JavaScript -->
     <script src="{{ url_for('static', filename='js/watch.js') }}"></script>
 </body>
 </html>
