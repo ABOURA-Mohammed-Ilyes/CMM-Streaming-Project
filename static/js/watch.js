@@ -5,6 +5,7 @@ class VideoPlayer {
         this.resolutionButtons = document.getElementById("resolutionButtons");
         this.currentSegmentIndex = 0;
         this.segments = [];
+        this.segmentExists = []; // Nouveau tableau pour stocker l'état des segments
         this.currentResolution = null;
 
         this.initialize();
@@ -21,8 +22,8 @@ class VideoPlayer {
         if (folderName && resolution) {
             await this.loadSegments(folderName, resolution);
             if (this.segments.length) {
-                this.setupPlaylist(); // Initialise la playlist avec tous les segments
-    
+                await this.setupPlaylist(); // Rendre asynchrone et attendre l'initialisation de la playlist
+
                 // Si segmentindex est défini, le convertir en entier, sinon démarrer à 0
                 segmentindex = segmentindex ? parseInt(segmentindex, 10) : 0;
                 this.currentSegmentIndex = segmentindex;
@@ -57,16 +58,15 @@ class VideoPlayer {
             const data = await response.json();
     
             if (data[0].segments && data[0].segments.folder) {
-                // Extraire les résolutions disponibles depuis segments.folder
                 const availableResolutions = data[0].segments.folder.split(',').map(res => res.trim());
     
-                this.resolutionButtons.innerHTML = ''; // Effacer les boutons existants
+                this.resolutionButtons.innerHTML = '';
     
                 availableResolutions.forEach((res) => {
-                    // Exclure la résolution actuelle
                     if (res !== this.currentResolution) {
                         const button = document.createElement("button");
                         button.textContent = `${res}p`;
+                        button.classList.add('small-button'); // Ajout de la classe pour le style
                         button.addEventListener("click", () => {
                             const currentSegment = this.currentSegmentIndex;
                             window.location.href = `/watch?v=${folderName}&res=${res}&seg=${currentSegment}`;
@@ -82,71 +82,122 @@ class VideoPlayer {
         }
     }
 
-    setupPlaylist() {
+    async setupPlaylist() {
         this.segmentList.innerHTML = ''; 
         const urlParams = new URLSearchParams(window.location.search);
         const folderName = urlParams.get("v");
         const resolution = this.currentResolution;
         
-        this.segments.forEach((segment, index) => {
-            const listItem = document.createElement("li");
-            listItem.classList.add("segment-item");
-            
-            // Ajouter un gestionnaire d'événements au <li> pour le rendre cliquable
-            listItem.addEventListener("click", (event) => {
-                event.preventDefault();
-                this.playSegment(index);
-            });
+        this.segmentExists = []; // Initialiser le tableau
     
-            // Crée une image pour le segment
-            const thumbnail = document.createElement("img");
-            thumbnail.src = `/api/segments/${folderName}/${resolution}/${segment.replace('.mp4', '.jpg')}`;
-            thumbnail.alt = `Thumbnail for Segment ${index + 1}`;
-            thumbnail.classList.add("segment-thumbnail");
+        for (let index = 0; index < this.segments.length; index++) {
+            const segment = this.segments[index];
+            const thumbnailUrl = `/api/segments/${folderName}/${resolution}/${segment.replace('.mp4', '.jpg')}`;
+            const segmentUrl = `/api/segments/${folderName}/${resolution}/${segment}`;
     
-            const text = document.createElement("span");
-            text.textContent = `Segment ${index + 1}`;
-            text.classList.add("segment-text");
+            try {
+                // Vérifier si le segment existe
+                const response = await fetch(thumbnailUrl);
+                const segmentExistsHeader = response.headers.get('Segment-Exists');
+                const segmentExists = segmentExistsHeader === 'true';
+                this.segmentExists[index] = segmentExists;
     
-            listItem.appendChild(thumbnail); // Ajouter la vignette
-            listItem.appendChild(text); // Ajouter le texte
-            this.segmentList.appendChild(listItem);
-        });
+                // Obtenir la taille du segment si celui-ci existe
+                let sizeInMB = '';
+                if (segmentExists) {
+                    const headResponse = await fetch(segmentUrl, { method: 'HEAD' });
+                    if (headResponse.ok) {
+                        const contentLength = headResponse.headers.get('Content-Length');
+                        if (contentLength) {
+                            sizeInMB = (contentLength / (1024)).toFixed(2) + ' KB';
+                        } else {
+                            sizeInMB = 'Taille inconnue';
+                        }
+                    } else {
+                        sizeInMB = 'Taille inconnue';
+                    }
+                }
+    
+                // Créer l'élément de liste pour le segment
+                const listItem = document.createElement("li");
+                listItem.classList.add("segment-item");
+    
+                // Ajouter un gestionnaire d'événements pour rendre l'élément cliquable
+                listItem.addEventListener("click", (event) => {
+                    event.preventDefault();
+                    this.playSegment(index);
+                });
+    
+                // Créer une image pour la vignette
+                const thumbnail = document.createElement("img");
+                thumbnail.src = thumbnailUrl;
+                thumbnail.alt = `Vignette du Segment ${index + 1}`;
+                thumbnail.classList.add("segment-thumbnail");
+    
+                // Créer un élément de texte pour le nom du segment et la taille
+                const text = document.createElement("span");
+                text.classList.add("segment-text");
+    
+                if (segmentExists) {
+                    text.textContent = `Segment ${index + 1} (${sizeInMB})`;
+                } else {
+                    text.textContent = `Segment perdu`;
+                    listItem.classList.add("segment-missing");
+                }
+    
+                listItem.appendChild(thumbnail);
+                listItem.appendChild(text);
+                this.segmentList.appendChild(listItem);
+            } catch (error) {
+                console.error(`Erreur lors du traitement du segment ${index + 1}:`, error);
+            }
+        }
     
         this.videoPlayer.addEventListener("ended", () => this.playNextSegment());
     }
-    
 
     playSegment(index) {
         if (index >= 0 && index < this.segments.length) {
+            if (!this.segmentExists[index]) {
+                this.videoPlayer.pause();
+                this.videoPlayer.src = '';
+                this.displayErrorMessage(`Segment perdu. Impossible de lire le segment ${index + 1}.`);
+                return;
+            }
+
+            this.clearErrorMessage(); // Effacer les messages d'erreur précédents
+
             const urlParams = new URLSearchParams(window.location.search);
             const folderName = urlParams.get("v");
-            const resolution = this.currentResolution; // Utilise la résolution courante
+            const resolution = this.currentResolution;
             const segmentUrl = `/api/segments/${folderName}/${resolution}/${this.segments[index]}`;
-            
-            // Vérifie si le segment est accessible
-            fetch(segmentUrl, { method: 'HEAD' })
-                .then((response) => {
-                    if (response.ok) {
-                        this.videoPlayer.src = segmentUrl;
-                        this.videoPlayer.play();
-    
-                        this.updatePlaylistHighlight(index);
-                        this.currentSegmentIndex = index;
-                    } else {
-                        this.displayErrorMessage(`Impossible de trouver le segment ${index + 1}.`);
-                    }
-                })
-                .catch((error) => {
-                    console.error("Erreur lors de la tentative de récupération du segment :", error);
-                    this.displayErrorMessage(`Une erreur est survenue en essayant de charger le segment ${index + 1}.`);
-                });
+
+            this.videoPlayer.src = segmentUrl;
+            this.videoPlayer.play();
+
+            this.updatePlaylistHighlight(index);
+            this.currentSegmentIndex = index;
         } else {
             this.displayErrorMessage("Segment invalide ou hors limites.");
         }
     }
-    
-    // Méthode pour afficher un message d'erreur dans l'interface utilisateur
+
+    playNextSegment() {
+        this.currentSegmentIndex = parseInt(this.currentSegmentIndex, 10) + 1;
+        if (this.currentSegmentIndex < this.segments.length) {
+            this.playSegment(this.currentSegmentIndex);
+        } else {
+            // Plus de segments à lire
+            this.videoPlayer.pause();
+        }
+    }
+
+    updatePlaylistHighlight(index) {
+        Array.from(this.segmentList.children).forEach((item, i) => {
+            item.classList.toggle("playing", i === index);
+        });
+    }
+
     displayErrorMessage(message) {
         const errorContainer = document.getElementById("errorContainer");
         if (!errorContainer) {
@@ -156,7 +207,7 @@ class VideoPlayer {
             container.style.color = "red";
             container.style.marginTop = "10px";
             container.textContent = message;
-    
+
             document.body.appendChild(container);
         } else {
             // Met à jour le message d'erreur existant
@@ -164,15 +215,11 @@ class VideoPlayer {
         }
     }
 
-    playNextSegment() {
-        this.currentSegmentIndex = parseInt(this.currentSegmentIndex, 10) + 1;
-        this.playSegment(this.currentSegmentIndex);
-    }
-
-    updatePlaylistHighlight(index) {
-        Array.from(this.segmentList.children).forEach((item, i) => {
-            item.classList.toggle("playing", i === index);
-        });
+    clearErrorMessage() {
+        const errorContainer = document.getElementById("errorContainer");
+        if (errorContainer) {
+            errorContainer.textContent = '';
+        }
     }
 }
 

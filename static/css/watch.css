@@ -1,44 +1,66 @@
-/* Conteneur principal pour la vidéo et la playlist */
-#video-container {
+/* Style pour les boutons de résolution */
+#resolutionButtons {
+    display: flex;
+    gap: 5px; /* Espace entre les boutons */
+    margin-bottom: 10px;
+    align-items: flex-start; /* Aligne les boutons à gauche */
+}
+
+#resolutionButtons button {
+    width: 60px;
+    height: 30px;
+    padding: 0;
+    margin: 0;
+    font-size: 0.8rem;
+    flex: none;
+    text-align: center;
+    line-height: 30px; /* Centre le texte verticalement */
+}
+
+/* Section contenant la vidéo et la playlist */
+.video-section {
     display: flex;
     align-items: flex-start;
-    gap: 20px; /* Espacement entre la vidéo et la playlist */
-    margin-top: 20px;
+    gap: 10px; /* Espace entre la vidéo et la playlist */
+}
+
+/* Conteneur de la vidéo */
+#video-container {
+    flex: 2;
 }
 
 /* Style pour la vidéo */
 #videoPlayer {
-    flex: 2; 
-    max-width: 600px; 
-    max-height: 340px; 
-    width: 100%; 
+    width: 100%;
     height: auto;
     border: 1px solid #ddd;
     border-radius: 5px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Style pour la playlist */
+/* Conteneur de la playlist */
+#playlist {
+    flex: 1;
+}
+
+/* Style pour la liste des segments */
 #segmentList {
-    flex: 1; /* Prend moins de place */
-    max-width: 300px; /* Limite la largeur */
     list-style-type: none;
     padding: 0;
     margin: 0;
-    overflow-y: auto; /* Ajoute une barre de défilement si nécessaire */
-    max-height: 400px; /* Limite la hauteur */
-    border: 1px solid #ddd; /* Bordure autour de la playlist */
+    overflow-y: auto;
+    max-height: 400px;
+    border: 1px solid #ddd;
     border-radius: 5px;
-    background-color: #f9f9f9; /* Fond léger */
+    background-color: #f9f9f9;
 }
 
-/* Style des éléments de la liste */
+/* Style des éléments de la playlist */
 #segmentList .segment-item {
     display: flex;
     align-items: center;
-    justify-content: flex-start;
-    padding: 8px;
-    margin: 5px 10px; /* Espacement interne des items */
+    padding: 6px;
+    margin: 5px;
     border: 1px solid #ddd;
     border-radius: 5px;
     background-color: #fff;
@@ -47,34 +69,33 @@
 }
 
 #segmentList .segment-item:hover {
-    background-color: #e6f0ff; /* Couleur de survol */
-    transform: scale(1.02); /* Légère mise en avant */
+    background-color: #e6f0ff;
+    transform: scale(1.02);
 }
 
-/* Miniatures compactes */
+/* Style des miniatures */
 #segmentList .segment-item img {
-    width: 60px; /* Miniature plus petite */
-    height: 45px; /* Proportions conservées */
-    margin-right: 10px; /* Espacement avec le texte */
-    border-radius: 3px; /* Coins légèrement arrondis */
+    width: 50px;
+    height: 38px;
+    margin-right: 8px;
+    border-radius: 3px;
     border: 1px solid #ccc;
-    object-fit: cover; /* Ajuste les dimensions sans déformation */
+    object-fit: cover;
 }
 
-/* Liens de la playlist */
-#segmentList .segment-item a {
-    text-decoration: none;
-    font-size: 13px; /* Texte plus compact */
-    color: #007bff;
-    font-weight: bold;
+/* Style du texte des segments */
+#segmentList .segment-text {
+    font-size: 12px;
+    color: #333;
 }
 
+/* Style pour le segment en cours de lecture */
 #segmentList .segment-item.playing {
     background-color: #007bff;
     color: white;
 }
 
-#segmentList .segment-item.playing a {
+#segmentList .segment-item.playing .segment-text {
     color: white;
 }
 
@@ -82,3 +103,7 @@
     border-color: white;
 }
 
+/* Style pour les segments manquants */
+#segmentList .segment-item.segment-missing {
+    border: 2px solid red;
+}

@@ -123,10 +123,6 @@ def save_video_and_info(file, upload_folder, time_intervals=None):
 
     return folder_name  # Retourne le nom du dossier
 
-import os
-import json
-import ffmpeg
-
 def segment_video_original(folder_path, json_path):
     # Charger les informations depuis le fichier JSON
     with open(json_path, 'r') as json_file:
@@ -139,7 +135,7 @@ def segment_video_original(folder_path, json_path):
     segment_folder_path = os.path.join(folder_path, segment_folder_name)
     os.makedirs(segment_folder_path, exist_ok=True)
 
-    segment_duration = 10  # Durée de chaque segment en secondes
+    segment_duration = 5  # Durée de chaque segment en secondes
     num_segments = int(duration // segment_duration) + (1 if duration % segment_duration > 0 else 0)
 
     # Créer les segments avec ffmpeg
@@ -179,7 +175,7 @@ def segment_video(folder_path, video_path, json_path, update_json=True):
 
     # Déterminer les paramètres de segmentation
     duration = float(video_info["duration"])
-    segment_duration = 10  # En secondes
+    segment_duration = 5  # En secondes
     num_segments = int(duration // segment_duration) + (1 if duration % segment_duration > 0 else 0)
     resolution_folder = os.path.basename(folder_path)  # Utiliser le nom du dossier pour identifier la résolution
 

@@ -15,32 +15,20 @@
         </ul>
         <ul>
             <li><a href="#">Accueil</a></li>
-            <li><a href="/categories">Catégories</a></li>
-            <li><a href="/about" role="button">À Propos</a></li>
+            <li><button onclick="location.href='/upload'" role="button" class="contrast">Uploader</button></li>
         </ul>
     </nav>
 
     <!-- Main Content -->
     <main class="container">
-        <header>
-            <h1>Bienvenue à la Vidéothèque</h1>
-            <p>Explorez et téléchargez vos vidéos préférées</p>
-            <button onclick="location.href='/upload'" role="button" class="contrast">Uploader une vidéo</button>
-        </header>
-
         <!-- Video List Section -->
         <section id="videos-section">
             <h2>Vos Vidéos</h2>
-            <div id="videos-list" class="grid">
+            <div id="videos-list" class="vertical-list">
                 <!-- Les vidéos téléchargées apparaîtront ici -->
             </div>
         </section>
     </main>
-
-    <!-- Footer -->
-    <footer class="container">
-        <small><a href="/contact">Contactez-nous</a> • <a href="/privacy">Politique de confidentialité</a></small>
-    </footer>
 
     <!-- JavaScript -->
     <script src="{{ url_for('static', filename='js/home.js') }}"></script>

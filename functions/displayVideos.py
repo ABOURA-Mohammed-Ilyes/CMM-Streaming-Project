@@ -22,13 +22,18 @@ def get_all_video_metadata(upload_folder, folder_name=None):
                     height = video_info["height"]
                     video_info["available_resolutions"] = []
                     if height >= 1080:
-                        video_info["available_resolutions"].extend(["360", "480", "720", "1080"])
+                        video_info["available_resolutions"].extend(["240", "360", "480", "640", "720", "1080"])
                     elif height >= 720:
-                        video_info["available_resolutions"].extend(["360", "480", "720"])
+                        video_info["available_resolutions"].extend(["240", "360", "480", "640", "720"])
+                    elif height >= 640:
+                        video_info["available_resolutions"].extend(["240", "360", "480", "640"])
                     elif height >= 480:
-                        video_info["available_resolutions"].extend(["360", "480"])
+                        video_info["available_resolutions"].extend(["240", "360", "480"])
                     elif height >= 360:
-                        video_info["available_resolutions"].extend(["360"])
+                        video_info["available_resolutions"].extend(["240", "360"])
+                    elif height >= 240:
+                        video_info["available_resolutions"].extend(["240"])
+                        
 
                     video_metadata.append(video_info)
 

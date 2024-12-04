@@ -46,21 +46,23 @@ class VideoUploader {
     mapResolution(videoHeight) {
         if (videoHeight >= 1080) return '1080';
         if (videoHeight >= 720) return '720';
+        if (videoHeight >= 640) return '640';
         if (videoHeight >= 480) return '480';
         if (videoHeight >= 360) return '360';
-        return '360'; // Valeur par défaut si la résolution est inférieure à 360p
+        if (videoHeight >= 240) return '240';
+        return '240';
     }
 
     getTargetResolutions(originalResolution) {
         const resolutions = [];
-        const allResolutions = ['1080', '720', '480', '360'];
+        const allResolutions = ['1080', '720', '640', '480', '360', '240'];
 
         const index = allResolutions.indexOf(originalResolution);
         if (index !== -1) {
             // Inclure toutes les résolutions égales ou inférieures à la résolution originale
             return allResolutions.slice(index);
         }
-        return ['360']; // Par défaut, retourner 360p
+        return ['240'];
     }
 
     displayResolutionOptions(fileId, videoHeight) {
@@ -185,7 +187,6 @@ class VideoUploader {
         videoPreview.src = fileURL;
 
         videoPreview.onloadeddata = () => {
-            // Révoquer l'URL après le chargement de l'aperçu
             URL.revokeObjectURL(fileURL);
         };
 
@@ -201,15 +202,23 @@ class VideoUploader {
 
         const addTimeIntervalButton = document.createElement('button');
         addTimeIntervalButton.textContent = 'Ajouter un intervalle de temps';
+        addTimeIntervalButton.classList.add('small-button'); // Réduction de la taille du bouton
         addTimeIntervalButton.addEventListener('click', () => {
             this.addTimeInterval(timeIntervalsContainer, videoPreview);
         });
 
         const uploadButton = document.createElement('button');
         uploadButton.textContent = 'Upload';
+        uploadButton.classList.add('small-button'); // Réduction de la taille du bouton
         uploadButton.addEventListener('click', () => {
             this.uploadVideoWithIntervals(fileId);
         });
+
+        // Création du conteneur pour les boutons
+        const buttonContainer = document.createElement('div');
+        buttonContainer.classList.add('button-container');
+        buttonContainer.appendChild(addTimeIntervalButton);
+        buttonContainer.appendChild(uploadButton);
 
         statusElement.appendChild(fileNameElement);
         statusElement.appendChild(document.createTextNode(': '));
@@ -217,8 +226,7 @@ class VideoUploader {
         statusElement.appendChild(durationElement);
         statusElement.appendChild(videoPreview);
         statusElement.appendChild(timeIntervalsContainer);
-        statusElement.appendChild(addTimeIntervalButton);
-        statusElement.appendChild(uploadButton);
+        statusElement.appendChild(buttonContainer); // Ajout du conteneur de boutons
         statusElement.appendChild(errorContainer);
 
         this.statusContainer.appendChild(statusElement);
@@ -235,6 +243,7 @@ class VideoUploader {
 
         const setStartButton = document.createElement('button');
         setStartButton.textContent = 'Définir début';
+        setStartButton.classList.add('small-button'); // Réduction de la taille du bouton
         setStartButton.addEventListener('click', () => {
             const currentTime = videoPreview.currentTime;
             startInput.value = this.formatTime(currentTime);
@@ -247,6 +256,7 @@ class VideoUploader {
 
         const setEndButton = document.createElement('button');
         setEndButton.textContent = 'Définir fin';
+        setEndButton.classList.add('small-button'); // Réduction de la taille du bouton
         setEndButton.addEventListener('click', () => {
             const currentTime = videoPreview.currentTime;
             endInput.value = this.formatTime(currentTime);
@@ -254,10 +264,12 @@ class VideoUploader {
 
         const removeButton = document.createElement('button');
         removeButton.textContent = 'Supprimer';
+        removeButton.classList.add('small-button'); // Réduction de la taille du bouton
         removeButton.addEventListener('click', () => {
             container.removeChild(intervalDiv);
         });
 
+        // Ajout des éléments au conteneur de l'intervalle
         intervalDiv.appendChild(startInput);
         intervalDiv.appendChild(setStartButton);
         intervalDiv.appendChild(endInput);

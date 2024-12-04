@@ -1,7 +1,13 @@
+.vertical-list {
+    display: flex;
+    flex-direction: column; /* Arrange items vertically */
+    gap: 10px; /* Add spacing between items */
+}
+
 .video-container {
     border: 1px solid #ccc; /* Light gray border for separation */
     padding: 10px;          /* Space inside the border */
-    margin: 10px;           /* Space between each video container */
-    border-radius: 5px;     /* Optional: rounded corners */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional: subtle shadow for depth */
+    border-radius: 5px;     /* Rounded corners */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    width: 100%;            /* Ensure full width */
 }

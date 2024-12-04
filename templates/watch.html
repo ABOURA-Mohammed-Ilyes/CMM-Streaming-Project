@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="/static/css/watch.css">
 </head>
 <body>
-    <!-- Navigation Bar -->
+    <!-- Barre de navigation -->
     <nav class="container-fluid">
         <ul>
             <li><strong>Vidéothèque</strong></li>
@@ -16,43 +16,28 @@
         <ul>
             <li><a href="/">Accueil</a></li>
             <li><a href="/upload">Uploader</a></li>
-            <li><a href="/categories">Catégories</a></li>
         </ul>
     </nav>
 
-    <!-- Main Content -->
+    <!-- Contenu principal -->
     <main class="container">
-        <header>
-            <h1>Lecteur Vidéo</h1>
-            <p>Regardez vos vidéos en haute qualité avec des options personnalisées.</p>
-        </header>
+        <!-- Boutons de résolution -->
+        <div id="resolutionButtons" class="resolution-buttons">
+            <!-- Les boutons de résolution apparaîtront ici -->
+        </div>
 
-        <!-- Resolution Buttons -->
-        <section id="resolutionSection">
-            <h2>Choisissez une résolution</h2>
-            <div id="resolutionButtons" class="grid">
-                <!-- Boutons de résolution apparaîtront ici -->
-            </div>
-        </section>
-
-        <!-- Video Player and Playlist -->
-        <section id="videoSection" class="grid">
-            <div id="video-container" class="video-player">
+        <!-- Lecteur vidéo et playlist -->
+        <section id="videoSection" class="video-section">
+            <div id="video-container" class="video-container">
                 <video id="videoPlayer" controls></video>
             </div>
             <aside id="playlist">
-                <h2>Playlist</h2>
                 <ul id="segmentList" class="segment-list">
-                    <!-- Liste des segments vidéo -->
+                    <!-- La liste des segments vidéo apparaîtra ici -->
                 </ul>
             </aside>
         </section>
     </main>
-
-    <!-- Footer -->
-    <footer class="container">
-        <small><a href="/contact">Contactez-nous</a> • <a href="/privacy">Politique de confidentialité</a></small>
-    </footer>
 
     <!-- JavaScript -->
     <script src="{{ url_for('static', filename='js/watch.js') }}"></script>
