@@ -33,8 +33,14 @@ def get_all_video_metadata(upload_folder, folder_name=None):
                         video_info["available_resolutions"].extend(["240", "360"])
                     elif height >= 240:
                         video_info["available_resolutions"].extend(["240"])
-                        
+                    
+                    # Obtenir le temps de création du fichier JSON
+                    creation_time = os.stat(json_path).st_birthtime
+                    video_info["creation_time"] = creation_time
 
                     video_metadata.append(video_info)
+
+    # Trier les vidéos de la plus récente à la plus ancienne
+    video_metadata.sort(key=lambda x: x["creation_time"], reverse=True)
 
     return video_metadata

@@ -15,17 +15,18 @@ class VideoLibrary {
     }
 
     populateVideoLibrary(videos) {
-        this.videoContainer.innerHTML = ""; // Vider la liste avant de la remplir
+        this.videoContainer.innerHTML = "";
 
         videos.forEach(video => {
             const videoElement = document.createElement("div");
             videoElement.classList.add("video-container");
 
-            // Utiliser le champ 'segments.folder' du JSON pour obtenir les résolutions disponibles
             const resolutions = video.segments.folder.split(',').map(res => res.trim());
-            const resolutionLinks = resolutions.map(res => 
-                `<a href="/watch?v=${video.NomDossier}&res=${res}&seg=0">${res}p</a>`
-            ).join(" | ");
+
+            const resolutionLinks = [`<a href="#" class="auto-btn" data-video-id="${video.NomDossier}" data-resolutions="${resolutions.join(',')}">Auto</a>`]
+                .concat(resolutions.map(res => 
+                    `<a href="/watch?v=${video.NomDossier}&res=${res}&seg=0">${res}p</a>`
+                )).join(" | ");
 
             videoElement.innerHTML = `
                 <h3>${video.NomVideo}</h3>
@@ -35,6 +36,66 @@ class VideoLibrary {
 
             this.videoContainer.appendChild(videoElement);
         });
+
+        this.addAutoButtonEventListeners();
+    }
+
+    addAutoButtonEventListeners() {
+        const autoButtons = document.querySelectorAll('.auto-btn');
+        autoButtons.forEach(button => {
+            button.addEventListener('click', (event) => {
+                event.preventDefault();
+                const videoId = button.getAttribute('data-video-id');
+                const availableResolutions = button.getAttribute('data-resolutions').split(',').map(res => res.trim()).sort((a, b) => b - a);
+                this.measureBandwidth().then(bandwidth => {
+                    const resolution = this.getResolutionFromBandwidth(bandwidth, availableResolutions);
+                    window.location.href = `/watch?v=${videoId}&res=${resolution}&seg=0`;
+                });
+            });
+        });
+    }
+
+    async measureBandwidth() {
+        const startTime = new Date().getTime();
+        const response = await fetch('/test_video');
+        const blob = await response.blob();
+        const endTime = new Date().getTime();
+        const duration = (endTime - startTime) / 1000;
+        const fileSize = blob.size * 8 / (1024 * 1024);
+        const bandwidth = fileSize / duration;
+        console.log(`Bande passante mesurée: ${bandwidth.toFixed(2)} Mbps`);
+        return bandwidth;
+    }
+
+    getResolutionFromBandwidth(bandwidth, availableResolutions) {
+        const possibleResolutions = ['1080', '720', '640', '480', '360', '240'];
+        let suggestedResolution;
+
+        if (bandwidth >= 5) {
+            suggestedResolution = '1080';
+        } else if (bandwidth >= 3) {
+            suggestedResolution = '720';
+        } else if (bandwidth >= 2) {
+            suggestedResolution = '640';
+        } else if (bandwidth >= 1.5) {
+            suggestedResolution = '480';
+        } else if (bandwidth >= 1) {
+            suggestedResolution = '360';
+        } else {
+            suggestedResolution = '240';
+        }
+
+        const indexOfSuggested = possibleResolutions.indexOf(suggestedResolution);
+        const acceptableResolutions = possibleResolutions.slice(indexOfSuggested);
+
+        for (const res of acceptableResolutions) {
+            if (availableResolutions.includes(res)) {
+                return res;
+            }
+        }
+
+        console.warn('No acceptable resolution found, defaulting to lowest available resolution.');
+        return availableResolutions[availableResolutions.length - 1];
     }
 }
 

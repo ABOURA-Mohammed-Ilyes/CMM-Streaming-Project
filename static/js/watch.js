@@ -139,7 +139,7 @@ class VideoPlayer {
                 text.classList.add("segment-text");
     
                 if (segmentExists) {
-                    text.textContent = `Segment ${index + 1} (${sizeInMB})`;
+                    text.textContent = `Segment ${index + 1} (${resolution}p - ${sizeInMB})`;
                 } else {
                     text.textContent = `Segment perdu`;
                     listItem.classList.add("segment-missing");

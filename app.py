@@ -1,5 +1,5 @@
 import os
-from flask import Flask, render_template, jsonify, request
+from flask import Flask, render_template, jsonify, request, send_from_directory
 from functions.segmentation import save_video_and_info, segment_video_original
 from functions.displayVideos import get_all_video_metadata
 from functions.getSegments import get_segment
@@ -101,6 +101,9 @@ def delete_original(folder_name):
     else:
         return jsonify({"error": "Erreur : la vidéo originale n'a pas été trouvée ou suppression échouée"}), 404
     
+@app.route('/test_video')
+def serve_test_video():
+    return send_from_directory(app.config['UPLOAD_FOLDER'], 'test_video.mp4', as_attachment=False)
 
 
 
